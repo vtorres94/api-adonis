@@ -1,6 +1,7 @@
 'use strict'
 
 const Proyecto = use("App/Models/Proyecto");
+const AutorizathionService = use("App/Services/AuthorizationService")
 
 class ProyectoController {
     async index({ auth }) {
@@ -21,15 +22,11 @@ class ProyectoController {
         const user = await auth.getUser();
         const { id } = params;
         const proyecto = await Proyecto.find(id);
-        if(proyecto.user_id === user.id) {
-            await proyecto.delete();
+        if(AutorizathionService.verificarPermiso(proyecto, user)){
+            await proyecto.delete()
             return {
                 mensaje: "Proyecto con id " + proyecto.id + " se ha elminado"
             }
-        } else {
-            return response.status(403).json({
-                mensaje: "No es dueño del proyecto que desea elminar"
-            })
         }
     };
 }
