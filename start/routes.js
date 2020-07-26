@@ -23,10 +23,16 @@ Route.get('/', () => {
 Route.group(() =>{
   Route.post('/users/login', 'UserController.login')
   Route.post('/users/registry', 'UserController.store')
-  Route.get('/users', () => {
-    return { greeting: 'Lista usuarios' }
-  })
+  
   Route.get('/proyectos', 'ProyectoController.index').middleware('auth')
   Route.post('/proyectos/create', 'ProyectoController.create').middleware('auth')
   Route.delete('/proyectos/delete/:id', 'ProyectoController.destroy').middleware('auth')
+  Route.patch('/proyectos/update/:id', 'ProyectoController.update').middleware('auth')
+
+  Route.get('/proyectos/:proyectoId/tareas/', 'TareaController.index').middleware('auth')
+  Route.post('/proyectos/:proyectoId/tareas/create', 'TareaController.create').middleware('auth')
+  Route.delete('/tareas/delete/:id', 'TareaController.destroy').middleware('auth')
+  Route.patch('/tareas/update/:id', 'TareaController.update').middleware('auth')
+
+
 }).prefix('api/v1');
