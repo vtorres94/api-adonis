@@ -21,6 +21,7 @@ Route.get('/', () => {
 })
 
 Route.group(() =>{
+  Route.get('/users/', 'UserController.getUser').middleware('auth')
   Route.post('/users/login', 'UserController.login')
   Route.post('/users/registry', 'UserController.store')
   
