@@ -1,8 +1,10 @@
 'use strict';
 
 const User = require('../../Models/User');
+const { validate } = use('Validator');
 
 class UserController {
+    
     async getUser({ auth }) {
         try {
             return await auth.getUser()
@@ -20,6 +22,29 @@ class UserController {
         const user = await User.create(userData);
         return user;
     };
+    async validation ({ request }) {
+        const rules = {
+          email: 'required|email|unique:users,email',
+          phone: 'required|unique:users,phone',
+          password: 'required',
+          name: 'required'
+        }
+    
+        const validation = await validate(request.all(), rules)
+        const { email, password, phone, name } = await request.all();
+        if (validation.fails()) {
+            return validation.messages();
+        } else {
+            const user = await User.create({
+                email,
+                password,
+                phone,
+                name,
+                username: email
+            });
+            return "User created successfully";
+        }    
+    }
     
 }
 
