@@ -5,12 +5,12 @@ class AutorizathionService {
     verificarPermiso(recurso, user) {
         const verified = true;
         if(!recurso) {
-            throw new RecursoNoEncotradoException();
             verified = false;
+            throw new RecursoNoEncotradoException();
         }
         if (recurso.user_id !== user.id) {
-            throw new AccesoInvalidoException();
             verified = false;
+            throw new AccesoInvalidoException();
         }
         return verified;
     }

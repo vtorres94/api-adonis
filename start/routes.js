@@ -23,8 +23,7 @@ Route.get('/', () => {
 Route.group(() =>{
   Route.get('/users/', 'UserController.getUser').middleware('auth')
   Route.post('/users/login', 'UserController.login')
-  Route.post('/users/registry', 'UserController.store')
-  Route.post('/users/signin', 'UserController.validation')
+  Route.post('/users/signin', 'UserController.store')
   
   Route.get('/proyectos', 'ProyectoController.index').middleware('auth')
   Route.post('/proyectos/create', 'ProyectoController.create').middleware('auth')

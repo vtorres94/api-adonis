@@ -1,7 +1,7 @@
 'use strict';
-
 const User = require('../../Models/User');
 const { validate } = use('Validator');
+const ValidationService = use("App/Services/ValidationService")
 
 class UserController {
     
@@ -17,34 +17,41 @@ class UserController {
         const token = await auth.attempt(email, password);
         return token;
     };
-    async store({ request }) {
-        const userData = request.only(['username', 'email', 'password'])
-        const user = await User.create(userData);
-        return user;
-    };
-    async validation ({ request }) {
-        const rules = {
-          email: 'required|email|unique:users,email',
-          phone: 'required|unique:users,phone',
-          password: 'required',
-          name: 'required'
-        }
-    
-        const validation = await validate(request.all(), rules)
+    async store ({ request }) {
+        const emailRule = { email: 'required|email|unique:users,email' }
+        const phoneRule = { phone: 'required|unique:users,phone' }
+        const passwordRule = { password: 'required' }
+        const nameRule = { name: 'required' }
         const { email, password, phone, name } = await request.all();
-        if (validation.fails()) {
-            return validation.messages();
+        const validationEmail = await validate(email, emailRule)
+        const validationPhone = await validate(phone, phoneRule)
+        const validationPassword = await validate(password, passwordRule)
+        const validationName = await validate(name, nameRule)
+        if (!validationEmail.fails()) {
+            if (!validationPhone.fails()) {
+                if (!validationPassword.fails()) {
+                    if (!validationName.fails()) {
+                        const user = await User.create({
+                            email,
+                            password,
+                            phone,
+                            name,
+                            username: email
+                        });
+                        return user;
+                    } else {
+                        return 'name error'
+                    }
+                } else {
+                    return 'password error'
+                }
+            } else {
+                return 'phone error'
+            }
         } else {
-            const user = await User.create({
-                email,
-                password,
-                phone,
-                name,
-                username: email
-            });
-            return "User created successfully";
-        }    
-    }
+            throw new SyntaxError('email error')
+        }
+    } 
     
 }
 
